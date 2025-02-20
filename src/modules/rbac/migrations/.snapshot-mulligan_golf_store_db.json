@@ -24,14 +24,37 @@
           "nullable": false,
           "mappedType": "text"
         },
-        "metadata": {
-          "name": "metadata",
-          "type": "jsonb",
+        "target": {
+          "name": "target",
+          "type": "text",
           "unsigned": false,
           "autoincrement": false,
           "primary": false,
-          "nullable": true,
-          "mappedType": "json"
+          "nullable": false,
+          "mappedType": "text"
+        },
+        "predefined": {
+          "name": "predefined",
+          "type": "boolean",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "mappedType": "boolean"
+        },
+        "action": {
+          "name": "action",
+          "type": "text",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "enumItems": [
+            "read",
+            "write",
+            "delete"
+          ],
+          "mappedType": "enum"
         },
         "created_at": {
           "name": "created_at",

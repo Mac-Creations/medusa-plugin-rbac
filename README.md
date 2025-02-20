@@ -12,19 +12,24 @@ A powerful plugin for Medusa e-commerce that enables Role-Based Access Control (
 - Customizable roles and permissions
 
 ## TODO
-- [x] Module RBAC
-- [ ] Api Role/Permission/Member
+- [x] RBAC Module 
+- [ ] RBAC Middleware
+- [ ] Node package
+- [x] Api Role/Permission/Member
     - [x] CRUD Role
     - [x] CRUD Permission
-    - [ ] CRUD Member
-- [ ] Admin UI
-    - [ ] RBAC Settings
-    - [ ] Role Settings
-    - [ ] Permission Settings
-    - [ ] Member Settings
+    - [x] CRUD Member
+- [x] Admin UI
+    - [x] RBAC Settings
+    - [x] Role Settings
+    - [x] Permission Settings
+    - [x] Member Settings
 - [ ] Test Suite
     - [ ] Test RBAC module
+    - [ ] Test RBAC admin ui
     - [ ] Test API Route
+- [ ] Optimization/clean code
+
 
 
 ## Prerequisites

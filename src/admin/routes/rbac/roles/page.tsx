@@ -1,58 +1,108 @@
 import { defineRouteConfig } from "@medusajs/admin-sdk";
-import { Container, Heading, Table, Text } from "@medusajs/ui";
+import { Button, Container, Heading } from "@medusajs/ui";
 import { useRoles } from "../../../hooks/rbac/roles";
-import { RoleDTO } from "../../../../modules/rbac/types";
+import { RoleActionsMenu } from "../../../components/rbac/role";
+import { useState } from "react";
+import { usePermissions } from "../../../hooks/rbac/permissions";
+import RoleModal from "../../../components/rbac/role/role-modal/role-modal";
+import { Table } from "../../../components/common/table";
+import { PermissionDTO } from "../../../../modules/rbac/types";
+import { UserDTO } from "@medusajs/types";
+import {
+  useForm,
+} from "react-hook-form"
+import { RoleCreateSchemaType } from "./types";
 
 const Roles = () => {
-  const { data, loading } = useRoles();
+  const [currentPage, setCurrentPage] = useState(0);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedRoleId, setSelectedRoleId] = useState<string | null>(null);
+  const limit = 5;
+
+  const { data: dataRoles, refetch: refetchRoles } = useRoles({
+    fields: "id,name,permissions.*,users.id",
+    limit,
+    offset: currentPage * limit
+  });
+  const { data: dataPermission } = usePermissions({ fields: "roles.id" });
+
+  const form = useForm<RoleCreateSchemaType>({
+    defaultValues: {
+      name: "",
+      permissions: [],
+      users: [],
+    },
+  })
+
+  const columns = [
+    {
+      key: "name",
+      label: "Name",
+    },
+    {
+      key: "permissions",
+      label: "Policies",
+      render: (value: PermissionDTO[]) => (
+        <>
+          {value.length} allowed
+          <br />
+          {(dataPermission?.count ?? 0) - value.length} denied
+        </>
+      ),
+    },
+    {
+      key: "users",
+      label: "Members",
+      render: (value: UserDTO[]) => value.length,
+    },
+    {
+      key: "id",
+      label: " ",
+      render: (value: string) => (
+        <RoleActionsMenu id={value} refetch={refetchRoles} onEdit={handleEdit} />
+      ),
+    },
+  ];
+
+  const handleCreate = () => {
+    setSelectedRoleId(null);
+    form.reset({ name: "", permissions: [], users: [] });
+    setIsModalOpen(true);
+  };
+
+  const handleEdit = (id: string) => {
+    setSelectedRoleId(id);
+    setIsModalOpen(true);
+  };
 
   return (
-    <Container className="flex flex-col p-0 overflow-hidden">
-      <div className="p-6">
-        <Heading className="txt-large-plus">Roles</Heading>
+    <Container className="divide-y p-0">
+      <div className="flex items-center justify-between p-6">
+        <Heading className="h2">Roles</Heading>
+        <div className="flex items-center justify-center gap-x-2">
+          <Button variant="secondary" onClick={handleCreate}> 
+            Create role
+          </Button>
+        </div>
       </div>
-      <Table>
-        <Table.Header>
-          <Table.Row>
-            <Table.HeaderCell>Name</Table.HeaderCell>
-            <Table.HeaderCell>Policies</Table.HeaderCell>
-            <Table.HeaderCell>Members</Table.HeaderCell>
-            {/* <Table.HeaderCell>Actions</Table.HeaderCell> */}
-          </Table.Row>
-        </Table.Header>
-        {loading && <Text>Loading...</Text>}
-        {data && (
-          <Table.Body>
-            {data.map((role) => {
-              return (
-                <Table.Row key={role.id}>
-                  <Table.Cell className="flex gap-2 items-center">
-                    {role.name}
-                  </Table.Cell>
-                  <Table.Cell>Permission</Table.Cell>
-                  <Table.Cell>permission</Table.Cell>
-                  <Table.Cell>
-                    <RoleCount role={role} />
-                  </Table.Cell>
-                  {/* <Table.Cell>
-                    <DriverActionsMenu driver={driver} />
-                  </Table.Cell> */}
-                </Table.Row>
-              );
-            })}
-          </Table.Body>
-        )}
-      </Table>
+      <Table
+        columns={columns}
+        data={(dataRoles?.roles || []) as unknown as Record<string, unknown>[]}
+        limit={limit}
+        count={dataRoles?.count || 0}
+        currentPage={currentPage}
+        setCurrentPage={setCurrentPage}
+      />
       <div className="p-6"></div>
+        <RoleModal
+          form={form}
+          roleId={selectedRoleId}
+          isOpen={isModalOpen}
+          refetch={refetchRoles}
+          onClose={() => setIsModalOpen(false)}
+        />
     </Container>
   );
-};
-
-const RoleCount = ({ role }: { role: RoleDTO }) => {
-
-  const permissionCount = role?.permissions?.length || 0;
-  
-  return <Text>{`${permissionCount} permissions`}</Text>;
 };
 
 export const config = defineRouteConfig({

@@ -1,15 +1,15 @@
 import { Container, Heading, Text, Button } from "@medusajs/ui";
 import { Link } from "react-router-dom"
-import { usePermissions } from "../../../hooks/rbac/permissions";
+import { usePermissionsCount } from "../../../hooks/rbac/permissions";
 
 export const PermissionCardSettings = () => {
-    const { data: dataPermissions, loading: roleLoading } = usePermissions();
+    const { permissionStats } = usePermissionsCount();
 
     return (
         <Container className="flex flex-col space-y-4">
-            <Heading>{dataPermissions?.length} Permissions</Heading>
-            <Text className="text-wrap">0 predefined</Text>
-            <Text className="text-wrap">0 custom</Text>
+            <Heading>{permissionStats.totalPermissions} Permissions</Heading>
+            <Text className="text-wrap">{permissionStats.totalPredefined} predefined</Text>
+            <Text className="text-wrap">{permissionStats.totalCustoms} customs</Text>
             <Link to={"/rbac/permissions"}>
                 <Button>Configuration</Button>
             </Link>

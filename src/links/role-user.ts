@@ -9,3 +9,4 @@ export default defineLink(
     isList: true,
   }
 )
+

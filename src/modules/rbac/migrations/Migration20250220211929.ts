@@ -1,9 +1,9 @@
 import { Migration } from '@mikro-orm/migrations';
 
-export class Migration20241220224759 extends Migration {
+export class Migration20250220211929 extends Migration {
 
   async up(): Promise<void> {
-    this.addSql('create table if not exists "permission" ("id" text not null, "name" text not null, "metadata" jsonb null, "created_at" timestamptz not null default now(), "updated_at" timestamptz not null default now(), "deleted_at" timestamptz null, constraint "permission_pkey" primary key ("id"));');
+    this.addSql('create table if not exists "permission" ("id" text not null, "name" text not null, "target" text not null, "predefined" boolean not null, "action" text check ("action" in (\'read\', \'write\', \'delete\')) not null, "created_at" timestamptz not null default now(), "updated_at" timestamptz not null default now(), "deleted_at" timestamptz null, constraint "permission_pkey" primary key ("id"));');
     this.addSql('CREATE INDEX IF NOT EXISTS "IDX_permission_deleted_at" ON "permission" (deleted_at) WHERE deleted_at IS NULL;');
 
     this.addSql('create table if not exists "role" ("id" text not null, "name" text not null, "created_at" timestamptz not null default now(), "updated_at" timestamptz not null default now(), "deleted_at" timestamptz null, constraint "role_pkey" primary key ("id"));');
